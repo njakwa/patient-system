@@ -6,60 +6,35 @@ $errors = array();
 $message = "";
 $error_message = "";
 
-error_reporting(0);
+// error_reporting(0);
 
-function add_patient(){
 
-    global $conn;
-    global $errors;
-    global $message;
-    global $error_message;
+$id = @$_GET['a_id'];
 
-    if (isset($_POST["register"])) {
+$status = @$_GET['status'];
 
-        $fname = htmlentities(mysqli_real_escape_string($conn, $_POST['fname']));
-        $lname = htmlentities(mysqli_real_escape_string($conn, $_POST['lname']));
-        $location = htmlentities(mysqli_real_escape_string($conn, $_POST['location']));
-    
-    
-        if (empty($location) || empty($lname) || empty($fname)) {
-            $error = "Fill in the Blanks space";
-            array_push($errors, $error);
-        }
-    
-        $select = "SELECT * FROM patient WHERE first_name = '$fname' AND last_name = '$lname' ";
-        $check = $conn->query($select);
-    
-        if ($check) {
-            
-            if (mysqli_num_rows($check) > 0) {
-                
-                $message = "Patient already exist";
-    
-            }
-            else {
-                $sql = "INSERT INTO patient (first_name, last_name, location) VALUES ('".$fname."', '".$lname."', '".$location."') ";
-                $sql_insert = $conn->query($sql);
-    
-                if ($sql_insert){
-                    $message = 'Patient Successfully Added';
-                }
-                else{
-                    echo 'bad',mysqli_error($conn);
-                }
+$query = "UPDATE devices SET status = '$status' WHERE device_id = '".$id."' ";
 
-                return $sql_insert;
-            }
-    
-        }
-        // else{
-        //     echo 'Patient already exist';
-        // }
-    }
+$up = mysqli_query($conn, $query);
 
+if ($up) {
+
+    $query2 = "UPDATE allocation SET status = 'unassigned' WHERE device_id = '".$id."' ";
+
+    $up2 = mysqli_query($conn, $query2);
 }
 
-add_patient();
+
+$update_sel = "SELECT * FROM allocation INNER JOIN devices INNER JOIN patient ON allocation.patient_id = patient.patient_id 
+                AND allocation.device_id = devices.device_id WHERE devices.status = 'assigned' AND allocation.status = 'assigned' ";
+
+$result = mysqli_query($conn, $update_sel);
+
+if (!$result) {
+echo "Error".mysqli_error($conn);
+}
+
+
 
 ?>
 
@@ -254,7 +229,6 @@ add_patient();
                     <span>Allocate Patients</span>
                 </a>
             </li>
-
             <li class="nav-item">
                 <a class="nav-link collapsed" href="allocation_table.php" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
@@ -635,225 +609,80 @@ add_patient();
 
                     <div class="container-fluid">
 
-                    <!-- Content Row -->
-                    <div class="row">
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Patients Allocation</h1>
 
-                        <div class="col-xl-8 col-lg-7">
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <!-- <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6> -->
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Patients Name</th>
+                                            <th>Device allocated</th>
+                                            <th>Location</th>
+                                            <th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                        <th>Patients Name</th>
+                                            <th>Device allocated</th>
+                                            <th>Location</th>
+                                            <th>action</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <?php
 
-                            <!-- Area Chart -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Add Patients</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <!-- <canvas id="myAreaChart"></canvas> -->
+                                        if ($result ->num_rows > 0) {
 
-                                        <form action="add_patient.php" method="POST">
+                                            while ($row = $result -> fetch_assoc()) {
+                                        ?>
 
-                                            <div >
-                                                <?php if(isset($message)): ?>
+                                        <tr>
+                                            <td class="middle"> <?php echo $row['first_name'] . '' . $row['last_name']; ?> </td>
+                                            <td class="middle"> <?php echo $row['device_name']; ?> </td>
+                                            <td class="middle"> <?php echo $row['location']; ?> </td>
+                                            <td class="middle"> 
 
-                                                    <div>
-                                                        <?php echo $message; ?>
-                                                    </div>
-                                                        <?php endif;
+                                            <?php
 
-                                                        if(isset($error_message)): ?>
+                                            if ($row['status'] == 'assigned'){
+                                                echo '<button style="background: green"> <a href = "allocation_table.php?a_id='.$row['device_id'].'&status=unassigned"> Assigned </button></p>';
+                                            } 
+                                            // else{
+                                            //     echo '<button style="background: red" > <a href="allocation_table.php?a_id='.$row['user_id']. '&status=1"> Deactivate </button> </p>';
+                                            // }
 
-                                                    <div>
-                                                        <?php echo $error_message; ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
+                                            ?>
+                                            </td>
 
-                                            <div class="textbox">
-                                                <label> First Name:</label> <br>
-                                                <input type="text" name="fname" id="txtTest" required>
-                                            </div>
+                                        </tr>
 
-                                            <div class="textbox">
-                                                <label> Last Name:</label> <br>
-                                                <input type="text" name="lname" id="txtTest" required>
-                                            </div>
+                                        <?php
+                                            };
+                                        }
+                                        else{ ?>
+                                            <tr>
+                                                <td colspan="6" style="text-align: center"> No Patient Has Been Allocated </td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        
+                                        ?>	
 
-                                            <div class="textbox">
-                                                <label for="">Location: </label> <br>
-                                                <input type="text" name="location" required> 
-                                            </div>                
-
-                                            <div>
-                                                <input type="submit" name="register" class="btn" value="Add Patient" >
-                                            </div>
-
-                                        </form>
-
-                                    </div>
-                                    <hr>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
-
                         </div>
                     </div>
 
                 </div>
-                <!-- /.container-fluid -->
-
-
-                    <!-- Content Row -->
-                    <!-- <div class="row"> -->
-
-                        <!-- Content Column -->
-                        <!-- <div class="col-lg-6 mb-4">
-
-                            <!- Project Card Example ->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
-                                </div>
-                                <div class="card-body">
-                                    <h4 class="small font-weight-bold">Server Migration <span
-                                            class="float-right">20%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Sales Tracking <span
-                                            class="float-right">40%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                                            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Customer Database <span
-                                            class="float-right">60%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar" role="progressbar" style="width: 60%"
-                                            aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Payout Details <span
-                                            class="float-right">80%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                                            aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Account Setup <span
-                                            class="float-right">Complete!</span></h4>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                                            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!- Color System ->
-                            <div class="row">
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-primary text-white shadow">
-                                        <div class="card-body">
-                                            Primary
-                                            <div class="text-white-50 small">#4e73df</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-success text-white shadow">
-                                        <div class="card-body">
-                                            Success
-                                            <div class="text-white-50 small">#1cc88a</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-info text-white shadow">
-                                        <div class="card-body">
-                                            Info
-                                            <div class="text-white-50 small">#36b9cc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-warning text-white shadow">
-                                        <div class="card-body">
-                                            Warning
-                                            <div class="text-white-50 small">#f6c23e</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-danger text-white shadow">
-                                        <div class="card-body">
-                                            Danger
-                                            <div class="text-white-50 small">#e74a3b</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-secondary text-white shadow">
-                                        <div class="card-body">
-                                            Secondary
-                                            <div class="text-white-50 small">#858796</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-light text-black shadow">
-                                        <div class="card-body">
-                                            Light
-                                            <div class="text-black-50 small">#f8f9fc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-dark text-white shadow">
-                                        <div class="card-body">
-                                            Dark
-                                            <div class="text-white-50 small">#5a5c69</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div> -->
-
-                        <!-- <div class="col-lg-6 mb-4">
-
-                            <!- Illustrations ->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            src="img/undraw_posting_photo.svg" alt="...">
-                                    </div>
-                                    <p>Add some quality, svg illustrations to your project courtesy of <a
-                                            target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                                        constantly updated collection of beautiful svg images that you can use
-                                        completely free and without attribution!</p>
-                                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                                        unDraw &rarr;</a>
-                                </div>
-                            </div>
-
-                            <!- Approach ->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                                        custom components and custom utility classes.</p>
-                                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                                        Bootstrap framework, especially the utility classes.</p>
-                                </div>
-                            </div>
-
-                        </div>-->
-                    <!--</div>-->
-
-                </div> 
                 <!-- /.container-fluid -->
 
             </div>

@@ -32,12 +32,14 @@ function allocate(){
         if ($check) {
             // ...
             
-            $edit = "UPDATE devices SET status='assigned' WHERE device_id = (SELECT device_id FROM allocation WHERE devices.device_id = allocation.device_id)";
+            $edit = "UPDATE devices SET status = 'assigned' WHERE device_id = '$device'"; 
+                    
+                    // (SELECT device_id FROM allocation WHERE devices.device_id = allocation.device_id)";
                 $run = $conn->query($edit);
 
                 if ($run) {
 
-                    $sql = "INSERT INTO allocation (patient_id, device_id) VALUES ('".$patient."', '".$device."') ";
+                    $sql = "INSERT INTO allocation (patient_id, device_id, status) VALUES ('".$patient."', '".$device."', 'assigned') ";
                     $sql_insert = $conn->query($sql);
 
                     if ($sql_insert) {
@@ -259,6 +261,14 @@ allocate();
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Allocate Patients</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="allocation_table.php" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Allocation Table</span>
                 </a>
             </li>
 
