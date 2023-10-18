@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 17, 2023 at 06:58 PM
+-- Generation Time: Oct 18, 2023 at 09:25 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -30,17 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `allocation` (
   `allocation_id` int(11) NOT NULL,
   `patient_id` int(11) NOT NULL,
-  `device_id` int(11) NOT NULL
+  `device_id` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `allocation`
 --
 
-INSERT INTO `allocation` (`allocation_id`, `patient_id`, `device_id`) VALUES
-(2, 2, 2),
-(5, 1, 1),
-(6, 1, 2);
+INSERT INTO `allocation` (`allocation_id`, `patient_id`, `device_id`, `status`) VALUES
+(1, 1, 1, 'unassigned'),
+(2, 2, 3, 'unassigned'),
+(3, 1, 3, 'unassigned'),
+(4, 3, 3, 'unassigned'),
+(5, 1, 3, 'unassigned'),
+(6, 1, 1, 'unassigned'),
+(7, 1, 1, 'unassigned');
 
 -- --------------------------------------------------------
 
@@ -59,8 +64,8 @@ CREATE TABLE `devices` (
 --
 
 INSERT INTO `devices` (`device_id`, `device_name`, `status`) VALUES
-(1, 'scissors', 'assigned'),
-(2, 'stethoscope', 'assigned'),
+(1, 'scissors', 'unassigned'),
+(2, 'stethoscope', 'unassigned'),
 (3, 'forceps', 'unassigned'),
 (4, 'catheter', 'unassigned');
 
@@ -83,7 +88,8 @@ CREATE TABLE `patient` (
 
 INSERT INTO `patient` (`patient_id`, `first_name`, `last_name`, `location`) VALUES
 (1, 'Bright', 'Tembo', 'Blantre'),
-(2, 'Ntchindi', 'Njakwa', 'mzuzu');
+(2, 'Ntchindi', 'Njakwa', 'mzuzu'),
+(3, 'Madalo ', 'Tembo', 'mzimba');
 
 --
 -- Indexes for dumped tables
@@ -115,7 +121,7 @@ ALTER TABLE `patient`
 -- AUTO_INCREMENT for table `allocation`
 --
 ALTER TABLE `allocation`
-  MODIFY `allocation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `allocation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `devices`
@@ -127,7 +133,7 @@ ALTER TABLE `devices`
 -- AUTO_INCREMENT for table `patient`
 --
 ALTER TABLE `patient`
-  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
