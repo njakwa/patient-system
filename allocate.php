@@ -26,15 +26,23 @@ function allocate(){
             array_push($errors, $error);
         }
     
-        $select = "SELECT * FROM devices WHERE status = 'unassigned'";
-        $check = $conn->query($select);
+        $select = "SELECT status FROM devices WHERE device_id = '$device'";
+
+        $check = mysqli_query($conn, $select);
     
         if ($check) {
-            // ...
             
-            $edit = "UPDATE devices SET status = 'assigned' WHERE device_id = '$device'"; 
+            $row = mysqli_fetch_assoc($check);
+
+            if ($row['status'] != 'unassigned') {
+
+                $message = 'Device Already Assigned';
+
+            }
+            else{
+
+                $edit = "UPDATE devices SET status = 'assigned' WHERE device_id = '$device'"; 
                     
-                    // (SELECT device_id FROM allocation WHERE devices.device_id = allocation.device_id)";
                 $run = $conn->query($edit);
 
                 if ($run) {
@@ -55,7 +63,10 @@ function allocate(){
                 else{
                     $message = "The Device is already Allocatedddd";
                 }
-                
+
+            }
+            
+                        
                 
     
         }
