@@ -345,6 +345,11 @@
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div
+
+                                <?php   include ('connection.php'); 
+                                      $sql_patient_id = "SELECT patient_id FROM allocation WHERE device_id = $device_id AND status = '$status'";
+                                      $result_patient_id = $conn->query($sql_patient_id);
+                                ?>
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Hourly Temperature Overview</h6>
                                     <div class="dropdown no-arrow">
@@ -702,130 +707,162 @@ Chart.defaults.global.defaultFontColor = '#858796';
 // });
 
 // Sample temperature data and timestamps
-var temperatureData = [20, 21, 22, 23, 24, 25]; // Replace with your actual temperature data
-var timestampData = [
-  new Date(Date.now() - 3600000), // 1 Hour Ago
-  new Date(Date.now() - 2700000), // 45 Minutes Ago
-  new Date(Date.now() - 1800000), // 30 Minutes Ago
-  new Date(Date.now() - 900000),  // 15 Minutes Ago
-  new Date(Date.now() - 300000),  // 5 Minutes Ago
-  new Date(Date.now() - 60000)   // 1 Minute Ago
-];
-
-// Function to format timestamps as "HH:MM:SS" strings
-function formatTimestamp(timestamp) {
-  return timestamp.toTimeString().split(' ')[0];
-}
-
-// Function to update the chart with new data
-function updateChart() {
-  // Update temperature and timestamp data (replace with real-time data)
-  temperatureData.push(/* New temperature data point */);
-  timestampData.push(new Date());
-
-  // Limit the data to the last 6 points to keep it in sync with the labels
-  if (temperatureData.length > 6) {
-    temperatureData.shift();
-    timestampData.shift();
-  }
-
-  // Update chart labels with formatted timestamps
-  var labels = timestampData.map(formatTimestamp);
-
-  // Update the chart data
-  myLineChart.data.labels = labels;
-  myLineChart.data.datasets[0].data = temperatureData;
-
-  // Update the chart
-  myLineChart.update();
-}
-
-// Initial chart setup (similar to your original code)
-
-// Set up the chart
 var ctx = document.getElementById("myAreaChart");
-var myLineChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: timestampData.map(formatTimestamp),
-    datasets: [{
-      label: "Temperature",
-      lineTension: 0.3,
-      backgroundColor: "rgba(78, 115, 223, 0.05",
-      borderColor: "rgba(78, 115, 223, 1",
-      pointRadius: 3,
-      pointBackgroundColor: "rgba(78, 115, 223, 1",
-      pointBorderColor: "rgba(78, 115, 223, 1",
-      pointHoverRadius: 3,
-      pointHoverBackgroundColor: "rgba(78, 115, 223, 1",
-      pointHoverBorderColor: "rgba(78, 115, 223, 1",
-      pointHitRadius: 10,
-      pointBorderWidth: 2,
-      data: temperatureData,
-    }],
-  },
-  options: {
-  
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 10,
-        right: 25,
-        top: 25,
-        bottom: 0
-      }
-    },
-    scales: {
-      xAxes: [{
-        gridLines: {
-          display: false,
-          drawBorder: false
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: "Temperature",
+          lineTension: 0.3,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: [],
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
         },
-      }],
-      yAxes: [{
-        ticks: {
-          maxTicksLimit: 5,
-          padding: 10,
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+          }],
+          yAxes: [{
+            ticks: {
+              maxTicksLimit: 5,
+              padding: 10,
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            }
+          }],
         },
-        gridLines: {
-          color: "rgb(234, 236, 244)",
-          zeroLineColor: "rgb(234, 236, 244)",
-          drawBorder: false,
-          borderDash: [2],
-          zeroLineBorderDash: [2]
-        }
-      }],
-    },
-    legend: {
-      display: false
-    },
-    tooltips: {
-      backgroundColor: "rgb(255,255,255)",
-      bodyFontColor: "#858796",
-      titleMarginBottom: 10,
-      titleFontColor: '#6e707e',
-      titleFontSize: 14,
-      borderColor: '#dddfeb',
-      borderWidth: 1,
-      xPadding: 15,
-      yPadding: 15,
-      displayColors: false,
-      intersect: false,
-      mode: 'index',
-      caretPadding: 10,
-      callbacks: {
-        label: function(tooltipItem, chart) {
-          var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-          return datasetLabel + ': °C' + tooltipItem.yLabel + '°C'; // Modify units as needed
+        legend: {
+          display: false
+        },
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          intersect: false,
+          mode: 'index',
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + ': °C' + tooltipItem.yLabel + '°C'; // Modify units as needed
+            }
+          }
         }
       }
-    }
-    
-  }
-});
+//     options: {
+//     maintainAspectRatio: false,
+//     layout: {
+//       padding: {
+//         left: 10,
+//         right: 25,
+//         top: 25,
+//         bottom: 0
+//       }
+//     },
+//     legend: {
+//       display: false
+//     },
+//     tooltips: {
+//       backgroundColor: "rgb(255,255,255)",
+//       bodyFontColor: "#858796",
+//       titleMarginBottom: 10,
+//       titleFontColor: '#6e707e',
+//       titleFontSize: 14,
+//       borderColor: '#dddfeb',
+//       borderWidth: 1,
+//       xPadding: 15,
+//       yPadding: 15,
+//       displayColors: false,
+//       intersect: false,
+//       mode: 'index',
+//       caretPadding: 10,
+//       callbacks: {
+//         label: function(tooltipItem, chart) {
+//           var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+//           return datasetLabel + ': °C' + tooltipItem.yLabel + '°C'; // Modify units as needed
+//         }
+//       }
+//     }
+//   }
 
-// Refresh the chart every 1 minute (adjust the interval as needed)
-setInterval(updateChart, 1000);
+
+    });
+
+    // Function to format timestamps as "HH:MM:SS" strings
+    // function formatTimestamp(timestamp) {
+    //   return timestamp.toTimeString().split(' ')[0];
+    // }
+
+    function formatTimestamp(timestamp) {
+  // Assuming the timestamp is in 'Y-m-d H:i:s' format
+  var dateParts = timestamp.split(' ');
+  var timeParts = dateParts[1].split(':');
+  return timeParts[0] + ':' + timeParts[1] + ':' + timeParts[2];
+}
+    // Function to update the chart with new data
+    function updateChart() {
+      // Use Ajax to fetch new data from your PHP endpoint
+      $.ajax({
+        url: 'fetch_new.php', // Replace with your PHP endpoint
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          var temperatureData = data.temperatureData;
+          var timestampData = data.timestampData;
+
+          // Update chart labels with formatted timestamps
+          var labels = timestampData.map(formatTimestamp);
+
+          // Update the chart data
+          myLineChart.data.labels = labels;
+          myLineChart.data.datasets[0].data = temperatureData;
+
+          // Update the chart
+          myLineChart.update();
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+
+    // Refresh the chart every 1 minute (adjust the interval as needed)
+    setInterval(updateChart, 6000);
 
 </script>
 
