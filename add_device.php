@@ -230,7 +230,7 @@ add_device();
             <li class="nav-item">
                 <a class="nav-link collapsed" href="add_patient.php" data-target="#collapseTwo"
                 aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
+                    <i class="fas fa-fw fa-user"></i>
                     <span>Add Patient</span>
                     
                 </a>
@@ -240,7 +240,7 @@ add_device();
             <li class="nav-item">
                 <a class="nav-link collapsed" href="add_device.php" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
+                    <i class="fas fa-fw fa-stethoscope"></i>
                     <span>Devices</span>
                 </a>
             </li>
@@ -248,7 +248,7 @@ add_device();
             <li class="nav-item">
                 <a class="nav-link collapsed" href="allocate.php" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
+                    <i class="fas fa-fw fa-medkit"></i>
                     <span>Allocate Patients</span>
                 </a>
             </li>
@@ -256,7 +256,7 @@ add_device();
             <li class="nav-item">
                 <a class="nav-link collapsed" href="allocation_table.php" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
+                    <i class="fas fa-fw fa-table"></i>
                     <span>Allocation Table</span>
                 </a>
             </li>
