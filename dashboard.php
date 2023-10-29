@@ -346,12 +346,11 @@
                                 <!-- Card Header - Dropdown -->
                                 <div
 
-                                <?php   include ('connection.php'); 
-                                      $sql_patient_id = "SELECT patient_id FROM allocation WHERE device_id = $device_id AND status = '$status'";
-                                      $result_patient_id = $conn->query($sql_patient_id);
-                                ?>
+                    
+                                    
+                        
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Hourly Temperature Overview</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Hourly Temperature Overview  for  <?php include('get_name.php');   ?></h6>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
